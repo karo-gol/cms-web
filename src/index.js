@@ -19,7 +19,7 @@ const query = gql`
 const Root = () => {    
     const { data, loading } = useQuery(query);
 
-    if(loading) return "Loading...";
+    if(loading) return "Loading....";
 
     return (        
         <div>
