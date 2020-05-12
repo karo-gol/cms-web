@@ -1,38 +1,26 @@
 import React, { useEffect, useState } from "react";
+import "@babel/polyfill";
 import { render } from "react-dom";
 import { ApolloProvider } from "react-apollo";
 import { useQuery } from "@apollo/react-hooks";
-import gql from 'graphql-tag';
+import gql from "graphql-tag";
+import { ThemeProvider } from "@material-ui/core/styles";
+import Typography from '@material-ui/core/Typography';
+import { Provider } from "react-redux";
 
 import graphqlClient from "#root/graphql/graphqlClient";
+import theme from "./theme";
+import Root from "./Root";
+import store from "./store";
 
-const query = gql`
-    {
-        users {
-            userId
-            login
-            email
-        }
-    }
-`;
-
-const Root = () => {    
-    const { data, loading } = useQuery(query);
-
-    if(loading) return "Loading....";
-
-    return (        
-        <div>
-            {data.users.map(user => (
-                <div>{`${user.userId} - ${user.login} - ${user.email}`}</div>
-            ))}            
-        </div>
-    );
-};
 
 render(   
-    <ApolloProvider client={graphqlClient}> 
-        <Root />
-    </ApolloProvider>,   
+    <Provider store={store}>
+        <ApolloProvider client={graphqlClient}> 
+            <ThemeProvider theme={theme}>           
+                <Root />           
+            </ThemeProvider>
+        </ApolloProvider>
+    </Provider>,   
     document.getElementById("app")
 );
