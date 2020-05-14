@@ -13,11 +13,9 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import gql from "graphql-tag"
 import { useMutation } from "@apollo/react-hooks"
 import { useForm } from 'react-hook-form'
-import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 
-import { setAccessToken } from "#root/actions/userActions";
-
+import { setAccessToken } from "#root/helpers/accessToken";
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -43,7 +41,7 @@ const Copyright = () => {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <Link color="inherit" href="http://localhost:5001">
+      <Link color="inherit" href="/">
         CMS Project
       </Link>{' '}
       {new Date().getFullYear()}
@@ -66,8 +64,7 @@ const mutation = gql`
 
 const Login = () => {
   const classes = useStyles();
-  const [loginUser] = useMutation(mutation);
-  const dispatch = useDispatch();
+  const [loginUser] = useMutation(mutation); 
   const history = useHistory();
 
   const { register, handleSubmit, errors } = useForm(); 
@@ -80,10 +77,10 @@ const Login = () => {
       });
      
       if(response && response.data) {
-        dispatch(setAccessToken(response.data.loginUser.accessToken));        
-      }
-
-      history.push("/"); 
+        setAccessToken(response.data.loginUser.accessToken);        
+      }      
+      
+      history.push("/home"); 
   });
 
  

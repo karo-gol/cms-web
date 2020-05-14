@@ -1,8 +1,29 @@
 import React from "react";
+import gql from "graphql-tag";
+import { useQuery } from "@apollo/react-hooks";
 
-const Home = () => {
-    return (
-        "Welcome at home"
+const query = gql`
+  {
+    restricted
+  }
+`;
+
+const Home = (props) => {
+ 
+  const { data, loading, error } = useQuery(query);
+
+  if (loading) {
+    return <div>loading...</div>;
+  }
+
+  if (error) {
+    throw new Error(error);
+  }
+
+  return (
+      <div>            
+        {data.restricted}          
+      </div>
     );
 };
 
