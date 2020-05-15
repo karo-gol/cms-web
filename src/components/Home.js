@@ -1,6 +1,6 @@
-import React from "react";
-import gql from "graphql-tag";
-import { useQuery } from "@apollo/react-hooks";
+import React from 'react';
+import gql from 'graphql-tag';
+import { useQuery } from '@apollo/react-hooks';
 
 const query = gql`
   {
@@ -10,7 +10,7 @@ const query = gql`
 
 const Home = (props) => {
  
-  const { data, loading, error } = useQuery(query);
+  const { data, loading, error } = useQuery(query, {fetchPolicy: 'network-only'});
 
   if (loading) {
     return <div>loading...</div>;

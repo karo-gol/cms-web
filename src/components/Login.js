@@ -10,12 +10,12 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import gql from "graphql-tag"
-import { useMutation } from "@apollo/react-hooks"
+import gql from 'graphql-tag'
+import { useMutation } from '@apollo/react-hooks'
 import { useForm } from 'react-hook-form'
-import { useHistory } from "react-router-dom";
+import { useHistory } from 'react-router-dom';
 
-import { setAccessToken } from "#root/helpers/accessToken";
+import { setAccessToken } from '#root/helpers/accessToken';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -39,9 +39,9 @@ const useStyles = makeStyles((theme) => ({
 
 const Copyright = () => {
   return (
-    <Typography variant="body2" color="textSecondary" align="center">
+    <Typography variant='body2' color='textSecondary' align='center'>
       {'Copyright © '}
-      <Link color="inherit" href="/">
+      <Link color='inherit' href='/'>
         CMS Project
       </Link>{' '}
       {new Date().getFullYear()}
@@ -80,50 +80,50 @@ const Login = () => {
         setAccessToken(response.data.loginUser.accessToken);        
       }      
       
-      history.push("/home"); 
+      history.push('/home'); 
   });
 
  
   return (    
-    <Container component="main" maxWidth="xs">
+    <Container component='main' maxWidth='xs'>
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
-        <Typography component="h1" variant="h5">
+        <Typography component='h1' variant='h5'>
           Sign in
         </Typography>
         <form className={classes.form} onSubmit={onSubmit} noValidate>
           <TextField            
-            margin="normal"
+            margin='normal'
             required
             fullWidth
-            id="login"
-            label="Login"
-            name="login"
-            autoComplete="login"
+            id='login'
+            label='Login'
+            name='login'
+            autoComplete='login'
             autoFocus
-            inputRef={register({ required: "Login is required!" })}                 
+            inputRef={register({ required: 'Login is required!' })}                 
           /> 
           <FormHelperText error={Boolean(errors.login)}>{errors.login?.message}</FormHelperText>     
           <TextField            
-            margin="normal"
+            margin='normal'
             required
             fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            inputRef={register({ required: "Password is required!" })}                      
+            name='password'
+            label='Password'
+            type='password'
+            id='password'
+            autoComplete='current-password'
+            inputRef={register({ required: 'Password is required!' })}                      
           />     
           <FormHelperText error={Boolean(errors.password)}>{errors.password?.message}</FormHelperText>             
           <Button
-            type="submit"
+            type='submit'
             fullWidth
-            variant="contained"
-            color="secondary"
+            variant='contained'
+            color='secondary'
             className={classes.submit}
           >
             Sign In

@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import gql from "graphql-tag";
-import { useQuery } from "@apollo/react-hooks";
+import gql from 'graphql-tag';
+import { useQuery } from '@apollo/react-hooks';
 
-import { setAccessToken, getAccessToken } from "#root/helpers/accessToken";
-import Home from "./components/Home";
-import Login from "./components/Login";
-import Routes from "./Routes";
+import { setAccessToken, getAccessToken } from '#root/helpers/accessToken';
+import Home from './components/Home';
+import Login from './components/Login';
+import Routes from './Routes';
 
 // const query = gql`
 //   {
@@ -24,7 +24,7 @@ const Root = (props) => {
   const [loading, setLoading] = useState(true);
     
     useEffect(() => {
-        fetch(process.env.SERVICES_URI + "/refresh_token", { method: "POST", credentials: "include" })
+        fetch(process.env.SERVICES_URI + '/refresh_token', { method: 'POST', credentials: 'include' })
             .then(async x => {               
                 const { accessToken } = await x.json();               
                 setAccessToken(accessToken); 

@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
 
-const accessToken = (state="", action={}) => {
+const accessToken = (state='', action={}) => {
     return state;
 };
 

@@ -1,12 +1,12 @@
-import { ApolloClient } from "apollo-client";
-import { HttpLink } from "apollo-link-http";
-import { InMemoryCache } from "apollo-cache-inmemory";
-import { ApolloLink, Observable } from "apollo-link";
-import { TokenRefreshLink } from "apollo-link-token-refresh";
-import { onError } from "apollo-link-error";
-import jwtDecode from "jwt-decode";
+import { ApolloClient } from 'apollo-client';
+import { HttpLink } from 'apollo-link-http';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+import { ApolloLink, Observable } from 'apollo-link';
+import { TokenRefreshLink } from 'apollo-link-token-refresh';
+import { onError } from 'apollo-link-error';
+import jwtDecode from 'jwt-decode';
 
-import { setAccessToken, getAccessToken } from "#root/helpers/accessToken";
+import { setAccessToken, getAccessToken } from '#root/helpers/accessToken';
 
 export const cache = new InMemoryCache();
 
@@ -40,7 +40,7 @@ const requestLink = new ApolloLink((operation, forward) =>
 );
 
 const tokenRefreshLink = new TokenRefreshLink({
-    accessTokenField: "accessToken",
+    accessTokenField: 'accessToken',
     isTokenValidOrUndefined: () => {
         const token = getAccessToken();      
 
@@ -60,7 +60,7 @@ const tokenRefreshLink = new TokenRefreshLink({
         }
     },
     fetchAccessToken: () => {
-        return fetch(process.env.SERVICES_URI + "/refresh_token", { method: "POST", credentials: "include" });
+        return fetch(process.env.SERVICES_URI + '/refresh_token', { method: 'POST', credentials: 'include' });
     },
     handleFetch: accessToken => {       
         setAccessToken(accessToken);    
@@ -81,8 +81,8 @@ const client = new ApolloClient({
         }),
         requestLink,
         new HttpLink({
-            credentials: "include",
-            uri: process.env.SERVICES_URI + "/graphql"
+            credentials: 'include',
+            uri: process.env.SERVICES_URI + '/graphql'
         })
     ]),
     cache   
