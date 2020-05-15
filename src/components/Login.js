@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -16,6 +16,7 @@ import { useForm } from 'react-hook-form'
 import { useHistory } from 'react-router-dom';
 
 import { setAccessToken } from '#root/helpers/accessToken';
+import SimpleDialog from './shared/SimpleDialog';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -66,23 +67,35 @@ const Login = () => {
   const classes = useStyles();
   const [loginUser] = useMutation(mutation); 
   const history = useHistory();
+  const [open, setOpen] = useState(false);
 
   const { register, handleSubmit, errors } = useForm(); 
   const onSubmit = handleSubmit( async ({login, password}) => {
-      const response = await loginUser({
+    
+      try {
+        const response = await loginUser({
           variables: {
             login: login,
             password: password
           }
-      });
-     
-      if(response && response.data) {
-        setAccessToken(response.data.loginUser.accessToken);        
-      }      
-      
-      history.push('/home'); 
-  });
+        });
 
+        if(response && response.data) {
+          setAccessToken(response.data.loginUser.accessToken);        
+        }      
+        
+        history.push('/home'); 
+
+      } catch (err) {
+        setOpen(true);  
+        //console.log(err);     
+      }    
+      
+  });
+  
+  const handleClickOnClose = () => {
+    setOpen(false);
+  };
  
   return (    
     <Container component='main' maxWidth='xs'>
@@ -133,6 +146,7 @@ const Login = () => {
       <Box mt={8}>
         <Copyright />
       </Box>
+      <SimpleDialog open={open} onClose={handleClickOnClose} title='Error!' info='Sorry but login or password is not correct.' />
     </Container>
   );
 };

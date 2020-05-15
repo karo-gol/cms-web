@@ -10,7 +10,7 @@ const query = gql`
 
 const Home = (props) => {
  
-  const { data, loading, error } = useQuery(query, {fetchPolicy: 'network-only'});
+  const { data, loading, error } = useQuery(query);
 
   if (loading) {
     return <div>loading...</div>;
