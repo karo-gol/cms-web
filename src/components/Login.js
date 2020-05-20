@@ -146,7 +146,7 @@ const Login = () => {
       <Box mt={8}>
         <Copyright />
       </Box>
-      <SimpleDialog open={open} onClose={handleClickOnClose} title='Error!' info='Sorry but login or password is not correct.' />
+      <SimpleDialog open={open} onClose={handleClickOnClose} title='Error!' info='Sorry, but your login or password is not correct.' />
     </Container>
   );
 };
