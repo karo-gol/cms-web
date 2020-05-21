@@ -2,13 +2,15 @@ import React from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 
+import AddingUser from './AddingUser';
+
 const query = gql`
   {
     restricted
   }
 `;
 
-const Home = (props) => {
+const Users = (props) => {
  
   const { data, loading, error } = useQuery(query);
 
@@ -21,10 +23,11 @@ const Home = (props) => {
   }
 
   return (
-      <div>            
+      <div>   
+        <AddingUser />         
         {data.restricted}          
       </div>
     );
 };
 
-export default Home;
+export default Users;

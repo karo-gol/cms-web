@@ -8,7 +8,7 @@ import Fab from '@material-ui/core/Fab';
 import Zoom from '@material-ui/core/Zoom';
 import Button from '@material-ui/core/Button';
 import { Link, Route } from 'react-router-dom';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import IconButton from '@material-ui/core/IconButton';
 import clsx from 'clsx';
@@ -18,6 +18,9 @@ import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import Popover from '@material-ui/core/Popover';
+import { Typography } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
 
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
@@ -28,6 +31,7 @@ import PhotoAlbumIcon from '@material-ui/icons/PhotoAlbum';
 import PhotoIcon from '@material-ui/icons/Photo';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import InfoIcon from '@material-ui/icons/Info';
+import FaceIcon from '@material-ui/icons/Face';
 
 import { setAccessToken } from '#root/helpers/accessToken';
 
@@ -66,17 +70,14 @@ const useStyles = makeStyles((theme) => ({
           easing: theme.transitions.easing.sharp,
           duration: theme.transitions.duration.enteringScreen,
         }),
-    },
-    menuButton: {
-        marginRight: 36,
-    },
+    },    
     hide: {
         display: 'none',
     },
     drawer: {
         width: drawerWidth,
         flexShrink: 0,
-        whiteSpace: 'nowrap',
+        whiteSpace: 'nowrap',       
     },
     drawerOpen: {
         width: drawerWidth,
@@ -91,10 +92,7 @@ const useStyles = makeStyles((theme) => ({
           duration: theme.transitions.duration.leavingScreen,
         }),
         overflowX: 'hidden',
-        width: theme.spacing(7) + 1,
-        [theme.breakpoints.up('xs')]: {
-          width: theme.spacing(6) + 1,
-        },
+        width: theme.spacing(6) + 1,       
     },
     toolbar: {        
         display: 'flex',
@@ -109,16 +107,32 @@ const useStyles = makeStyles((theme) => ({
     },
     content: {
         flexGrow: 1,
-        padding: theme.spacing(3),
+        paddingTop: theme.spacing(3),
+        paddingBottom: theme.spacing(3),
     },
     listItem: {
       paddingTop: 2,
       paddingBottom: 2,
-      paddingLeft: theme.spacing(1) + 4,
-      paddingRight: theme.spacing(1) + 4,
+      paddingLeft: theme.spacing(1) + 2,
+      paddingRight: theme.spacing(1) + 2,
     },
     listItemIcon: {
       minWidth: theme.spacing(5),
+    },
+    backToTopAnchor: {
+      width: 1,
+      height: 1
+    },
+    loginIcon: {
+      display: 'flex',
+      justifyContent: 'flex-end'
+    },
+    loginPopoverText: {
+      padding: 4,
+      fontSize: 12
+    },
+    loginPopover: {
+      marginTop: -8
     }
   })
 );
@@ -155,10 +169,29 @@ const mutation = gql`
   }
 `;
 
+const query = gql`
+  {
+    me {
+      login
+    }
+  }
+`;
+
 const AppBarRoute = (props) => {
     const classes = useStyles();  
     const [logoutUser, { client }] = useMutation(mutation);
     const [open, setOpen] = useState(false);
+    const { data, loading, error } = useQuery(query);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const history = useHistory();
+
+    if (error) {
+      throw new Error(error);
+    }
+
+    if(loading) {
+      return <div>loading...</div>
+    }
 
     const handleDrawerOpen = () => {
       setOpen(true);
@@ -171,8 +204,20 @@ const AppBarRoute = (props) => {
     const onLogoutClick = async () => {
       await logoutUser();
       setAccessToken('');
-      await client.resetStore();
+      history.push('/');
+      await client.resetStore();      
+    };    
+
+    const handleLoginClick = (event) => {
+      setAnchorEl(event.currentTarget);
     };
+
+    const handleLoginClose = () => {
+      setAnchorEl(null);
+    };
+
+    const openLoginIcon = Boolean(anchorEl);
+    const id = openLoginIcon ? 'simple-popover' : undefined;
         
     return (
         <div className={classes.root}>            
@@ -190,19 +235,46 @@ const AppBarRoute = (props) => {
                       aria-label="open drawer"
                       onClick={handleDrawerOpen}
                       edge="start"
-                      className={clsx(classes.menuButton, {[classes.hide]: open })} >
+                      className={clsx({[classes.hide]: open })} >
                         <MenuIcon />
                     </IconButton>
 
-                    <div>
-                      <Button to='/test' color='inherit' component={Link}>Test</Button>
-                      <Button to='/home' color='inherit' component={Link}>Home</Button>
+                    <div className={classes.loginIcon}>
                       <Button to='/' color='inherit' component={Link} onClick={onLogoutClick}>Sign out</Button>                    
+                      {data && data.me ? (                        
+                        <div>
+                          <IconButton 
+                            aria-describedby={id} 
+                            color='inherit' 
+                            aria-label='you are signed in' 
+                            onClick={handleLoginClick}>
+                              <FaceIcon />
+                          </IconButton>
+                          <Popover 
+                            className={classes.loginPopover}                           
+                            id={id}
+                            open={openLoginIcon}
+                            anchorEl={anchorEl}
+                            onClose={handleLoginClose}
+                            anchorOrigin={{
+                              vertical: 'bottom',
+                              horizontal: 'center',
+                            }}
+                            transformOrigin={{
+                              vertical: 'top',
+                              horizontal: 'center',
+                            }}>
+                                <Typography className={classes.loginPopoverText}>
+                                  You are signed in as <strong>{data.me.login}</strong>.
+                                </Typography>
+                            </Popover>
+                        </div>
+                       ) : undefined} 
                     </div>
 
                 </Toolbar>
-            </AppBar>
-            <Toolbar id='back-to-top-anchor' />
+            </AppBar>   
+            <Toolbar disableGutters id='back-to-top-anchor' className={classes.backToTopAnchor}/>       
 
             <Drawer
                 variant="permanent"
@@ -253,7 +325,7 @@ const AppBarRoute = (props) => {
 
                 <Divider />
                
-            </Drawer>  
+            </Drawer>              
            
             <Container>
                 <main className={classes.content}>

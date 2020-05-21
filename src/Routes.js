@@ -1,10 +1,10 @@
 import React from 'react';
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 
-import Login from './components/Login';
-import Home from './components/Home';
+import SignUp from './components/SignUp';
+import Users from './components/Users';
 import Test from './components/Test';
-import AppBarRoute from './components/shared/AppBarRoute';
+import AppBarRoute from './components/AppBarRoute';
 import ErrorBoundary from './components/shared/ErrorBoundary';
 
 const Routes = () => {   
@@ -13,8 +13,8 @@ const Routes = () => {
         <BrowserRouter> 
             <ErrorBoundary>       
             <Switch>
-                <Route exact path='/' component={ Login } />            
-                <AppBarRoute path='/home' component={ Home } />
+                <Route exact path='/' component={ SignUp } />            
+                <AppBarRoute path='/users' component={ Users } />
                 <AppBarRoute path='/test' component={ Test } />
             </Switch>   
             </ErrorBoundary>          

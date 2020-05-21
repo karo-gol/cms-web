@@ -15,8 +15,8 @@ import { useMutation } from '@apollo/react-hooks'
 import { useForm } from 'react-hook-form'
 import { useHistory } from 'react-router-dom';
 
-import { setAccessToken } from '#root/helpers/accessToken';
-import SimpleDialog from './shared/SimpleDialog';
+import { setAccessToken, getAccessToken } from '#root/helpers/accessToken';
+import SimpleDialog from '../shared/SimpleDialog';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -63,11 +63,16 @@ const mutation = gql`
     }
 `;
 
-const Login = () => {
+const SignUp = () => {
   const classes = useStyles();
   const [loginUser] = useMutation(mutation); 
   const history = useHistory();
   const [open, setOpen] = useState(false);
+
+  const token = getAccessToken(); 
+  if(token) {
+    history.push('/users');
+  }
 
   const { register, handleSubmit, errors } = useForm(); 
   const onSubmit = handleSubmit( async ({login, password}) => {
@@ -84,7 +89,7 @@ const Login = () => {
           setAccessToken(response.data.loginUser.accessToken);        
         }      
         
-        history.push('/home'); 
+        history.push('/users'); 
 
       } catch (err) {
         setOpen(true);  
@@ -146,9 +151,13 @@ const Login = () => {
       <Box mt={8}>
         <Copyright />
       </Box>
-      <SimpleDialog open={open} onClose={handleClickOnClose} title='Error!' info='Sorry, but your login or password is not correct.' />
+      <SimpleDialog 
+        open={open} 
+        onClose={handleClickOnClose} 
+        title='Error!' 
+        info='Sorry, but your login or password is not correct.' />
     </Container>
   );
 };
 
-export default Login;
+export default SignUp;
