@@ -129,10 +129,10 @@ const useStyles = makeStyles((theme) => ({
     },
     loginPopoverText: {
       padding: 4,
-      fontSize: 12
+      
     },
     loginPopover: {
-      marginTop: -8
+      marginTop: -theme.spacing(1)
     }
   })
 );
@@ -264,7 +264,7 @@ const AppBarRoute = (props) => {
                               vertical: 'top',
                               horizontal: 'center',
                             }}>
-                                <Typography className={classes.loginPopoverText}>
+                                <Typography className={classes.loginPopoverText} variant='body2'>
                                   You are signed in as <strong>{data.me.login}</strong>.
                                 </Typography>
                             </Popover>

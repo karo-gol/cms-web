@@ -10,9 +10,9 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import gql from 'graphql-tag'
-import { useMutation } from '@apollo/react-hooks'
-import { useForm } from 'react-hook-form'
+import gql from 'graphql-tag';
+import { useMutation } from '@apollo/react-hooks';
+import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 
 import { setAccessToken, getAccessToken } from '#root/helpers/accessToken';
