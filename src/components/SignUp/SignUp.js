@@ -56,7 +56,7 @@ const mutation = gql`
         loginUser(login: $login, password: $password) {
             accessToken,
             user {
-                userId,
+                id,
                 login
             }
         }

@@ -1,11 +1,17 @@
-import React from 'react';
-import Paper from '@material-ui/core/Paper';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import { Typography } from '@material-ui/core';
+import React, { useState } from 'react';
+import { 
+    Paper, 
+    FormHelperText, 
+    TextField, 
+    Button,
+    Typography
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useForm } from 'react-hook-form';
+import { useMutation } from '@apollo/react-hooks';
+import gql from 'graphql-tag';
+
+import SimpleSnackbar from '../shared/SimpleSnackbar';
 
 const useStyles = makeStyles((theme) => ({
     main: {
@@ -26,21 +32,78 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: 'center'
     }
-
 }));
 
+const mutation = gql`
+    mutation($login: String!, $email: String!, $password: String!) {
+        createUser(login: $login, email: $email, password: $password) {
+            ok
+            error
+        }
+    }
+`;
 
-const AddingUser = () => {
+const UserForm = () => {
     const classes = useStyles();
-    const { register, handleSubmit, errors } = useForm();
+    
+    const [createUser] = useMutation(mutation);
+    
+    const [openSuccessInfo, setOpenSuccessInfo] = useState(false);    
+    const [openErrorInfo, setOpenErrorInfo] = useState(false);
+    const [errorInfo, setErrorInfo] = useState('');
+
+    const handleCloseInfo = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        if(openSuccessInfo) setOpenSuccessInfo(false);
+        if(openErrorInfo) setOpenErrorInfo(false);
+    };
+
+    const { register, handleSubmit, errors, reset } = useForm();    
 
     const onSubmit = handleSubmit( async ({login, email, password}) => {
+        try {
+            const response = await createUser({
+                variables: {
+                    login: login,
+                    email: email,
+                    password: password
+                }
+            });           
 
-    });
+            if(!response || !response.data) {
+                setOpenErrorInfo(true);
+            }
+
+            if(response.data.createUser.ok) {
+                setOpenSuccessInfo(true);
+            } else {
+                setOpenErrorInfo(true);
+                setErrorInfo(response.data.createUser.error);               
+            }
+
+            reset();
+        } catch (err) {
+            setOpenErrorInfo(true);
+            //console.log(err);
+            setErrorInfo(err.message);
+        }
+    });    
 
     return (
         <Paper className={classes.main} elevation={3}>
+
+            <SimpleSnackbar open={openSuccessInfo} action='success' onClose={handleCloseInfo}>
+                You have added new user successfully.
+            </SimpleSnackbar>
+            <SimpleSnackbar open={openErrorInfo} action='error' onClose={handleCloseInfo}>
+                {errorInfo ? errorInfo : 'The error has occured while editing the user.'}
+            </SimpleSnackbar>
+
             <Typography variant='h5'>Add user</Typography>
+
             <form onSubmit={onSubmit} noValidate>
                 <div className={classes.formInput}>
                     <div>
@@ -98,11 +161,12 @@ const AddingUser = () => {
                         className={classes.submit}                   
                     >
                         Save 
-                    </Button>
+                    </Button>                    
                 </div>
             </form>
+
         </Paper>
     );
 };
 
-export default AddingUser;
+export default UserForm;
