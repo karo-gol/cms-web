@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { setAccessToken } from '#root/helpers/accessToken';
 import Routes from './Routes';
+import Loading from './components/shared/Loading';
 
 const Root = (props) => {  
   const [loading, setLoading] = useState(true);
@@ -16,7 +17,7 @@ const Root = (props) => {
     }, []);
 
     if(loading) {
-        return <div>loading...</div>
+        return <Loading />;
     }
 
     return (       

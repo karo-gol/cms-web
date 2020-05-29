@@ -128,8 +128,7 @@ const UserForm = () => {
                             id='email'
                             label='Email'
                             name='email'
-                            autoComplete='email'
-                            autoFocus
+                            autoComplete='email'                           
                             inputRef={register({ required: 'Email is required!', pattern: {
                                     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
                                     message: 'Invalid email address!'
@@ -147,7 +146,7 @@ const UserForm = () => {
                             label='Password'
                             type='password'
                             id='password'
-                            autoComplete='current-password'
+                            autoComplete='current-password'                           
                             inputRef={register({ required: 'Password is required!' })}                      
                         />     
                         <FormHelperText error={Boolean(errors.password)}>{errors.password?.message}</FormHelperText>
@@ -157,7 +156,7 @@ const UserForm = () => {
                     <Button
                         type='submit'                    
                         variant='contained'
-                        color='secondary' 
+                        color='primary' 
                         className={classes.submit}                   
                     >
                         Save 

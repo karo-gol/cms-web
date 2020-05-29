@@ -38,12 +38,15 @@ const useStyles = makeStyles((theme) => ({
     },      
     cell: {
         padding: theme.spacing(0, 2)
-    },  
+    },
+    actionsButton: {
+        color: theme.palette.secondary.main
+    }  
 }));
 
-const ActionButtons = () => {
+const ActionButtons = (props) => {
     return (
-        <div>
+        <div className={props.classes}>
             <IconButton color='inherit' aria-label='edit' edge='start'>
                 <EditIcon />
             </IconButton>
@@ -116,7 +119,7 @@ const CustomTable = (props) => {
                                 <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                                     {withActions && (
                                         <TableCell key='actions' align='center' className={classes.cell}>
-                                            <ActionButtons />                           
+                                            <ActionButtons classes={classes.actionsButton} />                           
                                         </TableCell>
                                     )}
                                     {columns.map((column) => {

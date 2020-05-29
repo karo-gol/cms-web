@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { makeStyles, fade } from '@material-ui/core/styles';
 import InputBase from '@material-ui/core/InputBase';
 import SearchIcon from '@material-ui/icons/Search';
@@ -22,10 +22,11 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        color: theme.palette.secondary.main
     },
     inputRoot: {       
-        backgroundColor: fade(theme.palette.secondary.light, 0.15), '&:hover': {
-            backgroundColor: fade(theme.palette.secondary.light, 0.25),
+        backgroundColor: fade(theme.palette.primary.light, 0.15), '&:hover': {
+            backgroundColor: fade(theme.palette.primary.light, 0.25),
         },
         margin: theme.spacing(2),
         borderRadius: 5,
@@ -44,6 +45,13 @@ const useStyles = makeStyles((theme) => ({
 const SearchField = (props) => {
     const classes = useStyles();
     const { searchText, onChange } = props;
+    const searchInput = useRef(null);
+    
+    useEffect(() => {
+        if(searchText !== '') {
+            searchInput.current.focus();                  
+        }
+    }, [searchText]);
 
     return (
         <div className={classes.search}>                
@@ -51,7 +59,7 @@ const SearchField = (props) => {
                 <div className={classes.searchIcon}>
                     <SearchIcon />
                 </div>
-                <InputBase                        
+                <InputBase                                           
                     placeholder="Search..."
                     classes={{
                         root: classes.inputRoot,
@@ -60,6 +68,7 @@ const SearchField = (props) => {
                     inputProps={{ 'aria-label': 'search' }}
                     value={searchText}
                     onChange={onChange}
+                    inputRef={searchInput}
                 />
             </div>
         </div>

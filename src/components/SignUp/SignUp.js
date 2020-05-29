@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
-import Link from '@material-ui/core/Link';
-import Box from '@material-ui/core/Box';
+import {
+    Avatar,
+    Button,
+    CssBaseline,
+    TextField,
+    Link,
+    Box,    
+    Typography,
+    Container,
+    FormHelperText
+} from '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import gql from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';
 import { useForm } from 'react-hook-form';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Redirect } from 'react-router-dom';
 
 import { setAccessToken, getAccessToken } from '#root/helpers/accessToken';
 import SimpleDialog from '../shared/SimpleDialog';
@@ -27,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     },
     avatar: {
       margin: theme.spacing(1),
-      backgroundColor: theme.palette.secondary.main,
+      backgroundColor: theme.palette.primary.main,
     },
     form: {
       width: '100%', // Fix IE 11 issue.
@@ -36,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     submit: {
       margin: theme.spacing(3, 0, 2),
     },
-  }));
+}));
 
 const Copyright = () => {
   return (
@@ -67,11 +69,15 @@ const SignUp = () => {
   const classes = useStyles();
   const [loginUser] = useMutation(mutation); 
   const history = useHistory();
-  const [open, setOpen] = useState(false);
+  const [errorOpen, setErrorOpen] = useState(false);  
+
+  const handleClickOnClose = () => {
+    setErrorOpen(false);
+  };
 
   const token = getAccessToken(); 
-  if(token) {
-    history.push('/users');
+  if(token) {   
+    return <Redirect to='/users' />;
   }
 
   const { register, handleSubmit, errors } = useForm(); 
@@ -92,15 +98,12 @@ const SignUp = () => {
         history.push('/users'); 
 
       } catch (err) {
-        setOpen(true);  
+        setErrorOpen(true);  
         //console.log(err);     
       }    
       
-  });
+  });  
   
-  const handleClickOnClose = () => {
-    setOpen(false);
-  };
  
   return (    
     <Container component='main' maxWidth='xs'>
@@ -141,7 +144,7 @@ const SignUp = () => {
             type='submit'
             fullWidth
             variant='contained'
-            color='secondary'
+            color='primary'
             className={classes.submit}
           >
             Sign In
@@ -152,7 +155,7 @@ const SignUp = () => {
         <Copyright />
       </Box>
       <SimpleDialog 
-        open={open} 
+        open={errorOpen} 
         onClose={handleClickOnClose} 
         title='Error!' 
         info='Sorry, but your login or password is not correct.' />

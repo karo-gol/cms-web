@@ -7,8 +7,9 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
-import CustomTable from '../shared/Table/CustomTable';
+import CustomTable from '../shared/Table';
 import { ROWS_PER_PAGE, ROWS_PER_PAGE_OPTIONS } from './constants';
+import Loading from '../shared/Loading';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -95,7 +96,7 @@ const UserTable = () => {
     );    
   
     if (error) throw new Error(error);
-    if (loading) return <div>loading...</div>;   
+    if (loading) return <Loading />;
 
     renderCount++;
     console.log(renderCount);

@@ -4,7 +4,7 @@ import { Switch, Route, BrowserRouter } from 'react-router-dom';
 import SignUp from './components/SignUp';
 import Users from './components/Users';
 import Test from './components/Test';
-import AppBarRoute from './components/AppBarRoute';
+import AppLayout from './components/AppLayout';
 import ErrorBoundary from './components/shared/ErrorBoundary';
 
 const Routes = () => {   
@@ -14,8 +14,8 @@ const Routes = () => {
             <ErrorBoundary>       
             <Switch>
                 <Route exact path='/' component={ SignUp } />            
-                <AppBarRoute path='/users' component={ Users } />
-                <AppBarRoute path='/test' component={ Test } />
+                <AppLayout path='/users' component={ Users } />
+                <AppLayout path='/test' component={ Test } />
             </Switch>   
             </ErrorBoundary>          
         </BrowserRouter>  
