@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
     Paper, 
     FormHelperText, 
@@ -7,8 +7,8 @@ import {
     Typography
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { useForm } from 'react-hook-form';
-import { useMutation } from '@apollo/react-hooks';
+import { useForm, Controller } from 'react-hook-form';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 
 import SimpleSnackbar from '../shared/SimpleSnackbar';
@@ -28,13 +28,13 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(5, 0, 2),
         width: 250
     },
-    right: {
+    center: {
         display: 'flex',
-        justifyContent: 'center'
+        justifyContent: 'space-around'
     }
 }));
 
-const mutation = gql`
+const ADD_USER = gql`
     mutation($login: String!, $email: String!, $password: String!) {
         createUser(login: $login, email: $email, password: $password) {
             ok
@@ -43,10 +43,23 @@ const mutation = gql`
     }
 `;
 
-const UserForm = () => {
-    const classes = useStyles();
-    
-    const [createUser] = useMutation(mutation);
+const EDIT_USER = gql`
+    mutation($id: ID!, $login: String!, $email: String!, $password: String!) {
+        updateUser(id: $id, login: $login, email: $email, password: $password) {
+            ok
+            error
+        }
+    }
+`;
+
+let renderCount = 0;
+
+const UserForm = (props) => {
+    const classes = useStyles();   
+    const { selectedUser, onReset, title, onRefresh } = props;   
+
+    const [createUser] = useMutation(ADD_USER);
+    const [editUser] = useMutation(EDIT_USER);
     
     const [openSuccessInfo, setOpenSuccessInfo] = useState(false);    
     const [openErrorInfo, setOpenErrorInfo] = useState(false);
@@ -59,69 +72,161 @@ const UserForm = () => {
 
         if(openSuccessInfo) setOpenSuccessInfo(false);
         if(openErrorInfo) setOpenErrorInfo(false);
-    };
+    };    
 
-    const { register, handleSubmit, errors, reset } = useForm();    
+    const { handleSubmit, errors, reset, setValue, control } = useForm({
+        defaultValues: {
+            login: '',
+            email: '',
+            password: ''
+        }
+    });       
+
+    const [successInfo, setSuccessInfo] = useState('');   
 
     const onSubmit = handleSubmit( async ({login, email, password}) => {
-        try {
-            const response = await createUser({
-                variables: {
-                    login: login,
-                    email: email,
-                    password: password
-                }
-            });           
+        try {            
+            let response;                   
+
+            if(selectedUser) {
+                console.log('edit');
+                response = await editUser({
+                    variables: {
+                        id: selectedUser.id,
+                        login: login,
+                        email: email,
+                        password: password
+                    }
+                });                
+            } else {
+                console.log('create');
+                response = await createUser({
+                    variables: {
+                        login: login,
+                        email: email,
+                        password: password
+                    }
+                }); 
+            }           
 
             if(!response || !response.data) {
                 setOpenErrorInfo(true);
             }
 
-            if(response.data.createUser.ok) {
-                setOpenSuccessInfo(true);
+            let ok;
+            let errorMessage;
+
+            if(response.data.createUser) {
+                ok = response.data.createUser.ok;
+                errorMessage = response.data.createUser.error;
+                setSuccessInfo('You have added new user successfully.');               
+                //setTitle('Add user');
             } else {
-                setOpenErrorInfo(true);
-                setErrorInfo(response.data.createUser.error);               
+                ok = response.data.updateUser.ok;
+                errorMessage = response.data.updateUser.error;
+                setSuccessInfo('The user has been edited successfully.');              
+                //setTitle('Edit user');
             }
 
-            reset();
+            if(ok) {
+                setOpenSuccessInfo(true);
+                onRefresh();
+            } else {
+                setOpenErrorInfo(true);
+                setErrorInfo(errorMessage);               
+            }
+
+            onResetForm();         
         } catch (err) {
             setOpenErrorInfo(true);
-            //console.log(err);
+            console.log(err);
             setErrorInfo(err.message);
         }
-    });    
+    });       
+
+    const onResetForm = () => {
+        reset();
+        onReset();
+    };
+
+    useEffect(() => {     
+        if(selectedUser) {
+            console.log('in effect');
+            setValue('login', selectedUser.login, true);
+            setValue('email', selectedUser.email, true);
+            setValue('password', '1234', true);
+        }
+    }, [selectedUser]);
+
+    renderCount++;
+    console.log('UserForm render = ' + renderCount);
 
     return (
         <Paper className={classes.main} elevation={3}>
 
             <SimpleSnackbar open={openSuccessInfo} action='success' onClose={handleCloseInfo}>
-                You have added new user successfully.
+                {successInfo}
             </SimpleSnackbar>
             <SimpleSnackbar open={openErrorInfo} action='error' onClose={handleCloseInfo}>
                 {errorInfo ? errorInfo : 'The error has occured while editing the user.'}
             </SimpleSnackbar>
 
-            <Typography variant='h5'>Add user</Typography>
+            <Typography variant='h5'>{title}</Typography>
 
             <form onSubmit={onSubmit} noValidate>
                 <div className={classes.formInput}>
                     <div>
-                        <TextField
+                        <Controller 
+                            as={
+                                <TextField
+                                    margin='normal'
+                                    required
+                                    width='250'
+                                    id='login'
+                                    label='Login'
+                                    name='login'
+                                    autoComplete='new-login'
+                                    autoFocus
+                                />
+                            }                                             
+                            control={control}                            
+                            name='login'
+                            rules={{ required: 'Login is required!' }}                            
+                        />
+                        {/* <TextField
+                            defaultValue=''
                             margin='normal'
                             required
                             width='250'
                             id='login'
                             label='Login'
                             name='login'
-                            autoComplete='login'
+                            autoComplete='new-login'
                             autoFocus
-                            inputRef={register({ required: 'Login is required!' })} 
-                        />
+                            inputRef={register({ required: 'Login is required!' })}                            
+                        /> */}
                         <FormHelperText error={Boolean(errors.login)}>{errors.login?.message}</FormHelperText>
                     </div> 
                     <div>
-                        <TextField
+                        <Controller 
+                            as={
+                                <TextField
+                                    margin='normal'
+                                    required
+                                    width='250'
+                                    id='email'
+                                    label='Email'
+                                    name='email'
+                                    autoComplete='new-email'                  
+                                />
+                            }                                                 
+                            control={control}                            
+                            name='email'
+                            rules={{ required: 'Email is required!', pattern: {
+                                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                                message: 'Invalid email address!' }}}                            
+                        />
+                        {/* <TextField
                             margin='normal'
                             required
                             width='250'
@@ -132,27 +237,46 @@ const UserForm = () => {
                             inputRef={register({ required: 'Email is required!', pattern: {
                                     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
                                     message: 'Invalid email address!'
-                                } 
-                            })} 
-                        />
+                                }})                            
+                            } 
+                            //InputLabelProps={{ shrink }}
+                        /> */}
                         <FormHelperText error={Boolean(errors.email)}>{errors.email?.message}</FormHelperText>
                     </div> 
                     <div>
-                        <TextField            
-                            margin='normal'
-                            required
-                            width='250'
+                        <Controller 
+                            as={
+                                <TextField            
+                                    margin='normal'
+                                    required
+                                    width='250'
+                                    name='password'
+                                    label='Password'
+                                    type='password'
+                                    id='password'
+                                    autoComplete='current-password'                                                       
+                                />
+                            }                                                   
+                            control={control}                            
                             name='password'
-                            label='Password'
-                            type='password'
-                            id='password'
-                            autoComplete='current-password'                           
-                            inputRef={register({ required: 'Password is required!' })}                      
-                        />     
+                            rules={{ required: 'Password is required!' }}                            
+                        />
+                        {/*  <TextField            
+                             margin='normal'
+                             required
+                             width='250'
+                             name='password'
+                             label='Password'
+                             type='password'
+                             id='password'
+                             autoComplete='current-password'                           
+                             inputRef={register({ required: 'Password is required!' })}
+                             //InputLabelProps={{ shrink }}                      
+                         />      */}
                         <FormHelperText error={Boolean(errors.password)}>{errors.password?.message}</FormHelperText>
                     </div> 
                 </div>
-                <div className={classes.right}>
+                <div className={classes.center}>
                     <Button
                         type='submit'                    
                         variant='contained'
@@ -160,7 +284,16 @@ const UserForm = () => {
                         className={classes.submit}                   
                     >
                         Save 
-                    </Button>                    
+                    </Button> 
+                    <Button
+                        type='reset'                                           
+                        variant='contained'
+                        color='primary' 
+                        className={classes.submit}     
+                        onClick={(event) => onResetForm()}              
+                    >
+                        Cancel
+                    </Button>                   
                 </div>
             </form>
 
@@ -169,3 +302,4 @@ const UserForm = () => {
 };
 
 export default UserForm;
+//export default React.memo(UserForm, areEqual);

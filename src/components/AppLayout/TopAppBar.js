@@ -57,6 +57,7 @@ const useStyles = makeStyles((theme) => ({
 const query = gql`
   {
     me {
+      id
       login
     }
   }
@@ -83,7 +84,7 @@ const TopAppBar = (props) => {
     const { data, loading, error } = useQuery(query);
 
     if (error) throw new Error(error);  
-    if(loading) return null;      
+    if (loading) return null;      
 
     return (
         <AppBar 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 import {
@@ -6,6 +6,7 @@ import {
     TablePagination,      
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
 
 import CustomTable from '../shared/Table';
 import { ROWS_PER_PAGE, ROWS_PER_PAGE_OPTIONS } from './constants';
@@ -15,6 +16,10 @@ const useStyles = makeStyles((theme) => ({
     root: {
         width: '100%',
         marginTop: theme.spacing(3)
+    },
+    disabled: {
+        pointerEvents: 'none', 
+        opacity: '0.4'
     }    
 }));
 
@@ -41,18 +46,25 @@ const GET_USERS = gql`
                 id
                 login
                 email
-                createdAt
+                createdAt                
             }
             count          
         }
     }
 `;
 
+const areEqual = (prevProps, nextProps) => {    
+    console.log('in memo');
+    if(prevProps.disabled !== nextProps.disabled) {
+        return false;
+    }
+    return true;
+};
 
 let renderCount = 0;
 
-const UserTable = () => {
-    const classes = useStyles();
+const UserTable = ({ onEdit, onDelete, disabled, passRefetch }) => {
+    const classes = useStyles();        
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(ROWS_PER_PAGE); 
@@ -81,32 +93,43 @@ const UserTable = () => {
         setSearchText(event.target.value);         
     };
 
-    const { data, fetchMore, loading, error } = useQuery(GET_USERS, 
+    const { data, fetchMore, error, refetch } = useQuery(GET_USERS, 
         { 
-            variables: { 
+            variables: {
                 offset: 0, 
                 limit: rowsPerPage,
                 order: order,
                 orderBy: orderBy,
-                searchText: searchText
+                searchText: searchText               
             },
             fetchPolicy: 'cache-and-network',
-            notifyOnNetworkStatusChange: true          
+            notifyOnNetworkStatusChange: false            
         }
     );    
   
-    if (error) throw new Error(error);
-    if (loading) return <Loading />;
+    if(error) throw new Error(error);
+    //if(loading) return <Loading />; 
+    
+    let users = [];
+    let count = 0;
+    
+    if (data && data.users) {       
+        users = data.users.rows;
+        count = data.users.count;
+        passRefetch(refetch);
+    }   
+
+    
 
     renderCount++;
-    console.log(renderCount);
-    //console.log(data.users);        
-
+    console.log('UserTable render = ' + renderCount); 
+     
     return (
-        <Paper className={classes.root} elevation={3}>
+        <Paper className={clsx(classes.root, {[classes.disabled]: disabled})} elevation={3}>
+            {/* <button hidden ref={ref} onClick={(e) => refetch()}  /> */}
             <CustomTable 
                 columns={columns}
-                rows={data.users.rows}
+                rows={users}
                 withActions={true}
                 page={page}        
                 rowsPerPage={rowsPerPage}  
@@ -115,23 +138,27 @@ const UserTable = () => {
                 onSort={handleRequestSort}
                 searchText={searchText}
                 onSearch={handleSearchOnChange}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                disabled={disabled}              
             />
            
             <TablePagination
                 rowsPerPageOptions={ROWS_PER_PAGE_OPTIONS}
                 component="div"
-                count={data.users.count}              
+                count={count}              
                 rowsPerPage={rowsPerPage}
-                page={page}                           
+                page={page}    
+                //onChangePage={handleChangePage}                       
                 onChangePage={async (event, newPage) => {
                     await fetchMore({
                         variables: {
-                            offset: data.users.rows.length                              
+                            offset: users.length                              
                         },
                         updateQuery: (prev, { fetchMoreResult }) => {
                             handleChangePage(event, newPage);
 
-                            if (!fetchMoreResult) return prev;                   
+                            if (!fetchMoreResult) { console.log('uwaga'); return prev; }                   
                            
                             const result = Object.assign({}, prev, {
                                 users: {
@@ -144,10 +171,11 @@ const UserTable = () => {
                         }                    
                     })                  
                 }}
-                onChangeRowsPerPage={handleChangeRowsPerPage}
+                onChangeRowsPerPage={handleChangeRowsPerPage}                
             />
         </Paper>
     );
 };
 
-export default UserTable;
+//export default UserTable;
+export default memo(UserTable, areEqual);

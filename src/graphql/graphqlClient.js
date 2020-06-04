@@ -85,7 +85,8 @@ const client = new ApolloClient({
             uri: process.env.SERVICES_URI + '/graphql'
         })
     ]),
-    cache   
+    cache,
+    connectToDevTools: true   
 });
 
 export default client;

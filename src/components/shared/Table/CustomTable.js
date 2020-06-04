@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {    
     Table,    
     TableContainer, 
@@ -40,25 +40,20 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(0, 2)
     },
     actionsButton: {
-        color: theme.palette.secondary.main
-    }  
+        color: theme.palette.secondary.dark
+    },
+    root: {
+        '&$selected': {
+            backgroundColor: theme.palette.secondary.light,
+        },
+    },
+    selected: {},    
 }));
 
-const ActionButtons = (props) => {
-    return (
-        <div className={props.classes}>
-            <IconButton color='inherit' aria-label='edit' edge='start'>
-                <EditIcon />
-            </IconButton>
-            <IconButton color='inherit' aria-label='delete' edge='start'>
-                <DeleteIcon />
-            </IconButton>    
-        </div>
-    );
-};
 
 const CustomTable = (props) => {
-    const classes = useStyles();
+    const classes = useStyles();   
+    const [selectedId, setSelectedId] = useState();
     
     const { 
         columns, 
@@ -70,8 +65,13 @@ const CustomTable = (props) => {
         orderBy,     
         onSort,
         searchText,
-        onSearch
-     } = props; 
+        onSearch,
+        onEdit,
+        onDelete,
+        disabled
+    } = props;  
+    
+    //console.log('CustomTable render');
     
     return (
 
@@ -116,10 +116,34 @@ const CustomTable = (props) => {
                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                         .map((row) => {
                             return (
-                                <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                                <TableRow hover                                    
+                                    role="checkbox" 
+                                    tabIndex={-1} 
+                                    key={row.id} 
+                                    selected={(selectedId === row.id && disabled) ? true : false}
+                                    classes={{
+                                        root: classes.root,
+                                        selected: classes.selected
+                                    }} 
+                                >
                                     {withActions && (
                                         <TableCell key='actions' align='center' className={classes.cell}>
-                                            <ActionButtons classes={classes.actionsButton} />                           
+                                            <div className={classes.actionsButton}>
+                                                <IconButton 
+                                                    color='inherit' 
+                                                    aria-label='edit' 
+                                                    edge='start'                                                     
+                                                    onClick={(event) => { setSelectedId(row.id); onEdit(event, row.id); }}>
+                                                        <EditIcon />
+                                                </IconButton>
+                                                <IconButton 
+                                                    color='inherit' 
+                                                    aria-label='delete' 
+                                                    edge='start'
+                                                    onClick={(event) => onDelete(event, row.id)}>
+                                                        <DeleteIcon />
+                                                </IconButton>    
+                                            </div>                           
                                         </TableCell>
                                     )}
                                     {columns.map((column) => {

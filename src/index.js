@@ -3,7 +3,8 @@ import '@babel/polyfill';
 import { render } from 'react-dom';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { Provider } from 'react-redux';
-import { ApolloProvider } from '@apollo/react-hooks';
+//import { ApolloProvider } from '@apollo/react-hooks';
+import { ApolloProvider } from 'react-apollo';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
 import graphqlClient from '#root/graphql/graphqlClient';
