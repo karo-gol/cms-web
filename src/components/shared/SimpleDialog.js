@@ -18,22 +18,36 @@ const useStyles = makeStyles((theme) => ({
 const SimpleDialog = (props) => {  
     const classes = useStyles();
     const { 
-        title, 
-        info,
+        children,
+        title,        
         onClose,
-        open 
+        open,
+        action,
+        question,
+        onConfirm
     } = props;    
   
     return (           
         <Dialog onClose={onClose} aria-labelledby="customized-dialog-title" open={open} >
-            <Alert severity="error" className={classes.root}>
+            <Alert severity={action} className={classes.root}>
                 <AlertTitle><strong>{title}</strong></AlertTitle>
-                {info}
+                {children}
             </Alert>          
             <DialogActions>
-                <Button autoFocus onClick={onClose} color="primary">
-                    OK
-                </Button>
+                {question ? 
+                    (<div>
+                        <Button autoFocus onClick={() => onConfirm(true)} color="primary">
+                            Yes
+                        </Button>
+                        <Button onClick={onClose} color="primary">
+                            No
+                        </Button>
+                    </div>)
+                    :
+                    <Button autoFocus onClick={onClose} color="primary">
+                        OK
+                    </Button>
+                }
             </DialogActions>
         </Dialog>      
     );

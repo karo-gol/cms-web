@@ -150,7 +150,7 @@ const CustomTable = (props) => {
                                         const value = row[column.id];
                                         return (
                                             <TableCell key={column.id} align={column.align} className={classes.cell}>
-                                                {column.format && typeof value === 'number' ? column.format(value) : value}
+                                                {column.format ? column.format(value) : value}
                                             </TableCell>
                                         );
                                     })}

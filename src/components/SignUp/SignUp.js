@@ -157,8 +157,10 @@ const SignUp = () => {
       <SimpleDialog 
         open={errorOpen} 
         onClose={handleClickOnClose} 
-        title='Error!' 
-        info='Sorry, but your login or password is not correct.' />
+        action='error'
+        title='Error!'> 
+          Sorry, but your login or password is not correct.
+      </SimpleDialog>
     </Container>
   );
 };

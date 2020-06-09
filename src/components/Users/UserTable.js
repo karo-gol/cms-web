@@ -10,7 +10,7 @@ import clsx from 'clsx';
 
 import CustomTable from '../shared/Table';
 import { ROWS_PER_PAGE, ROWS_PER_PAGE_OPTIONS } from './constants';
-import Loading from '../shared/Loading';
+import { formatDate } from '#root/helpers/formatDateTime';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -32,7 +32,7 @@ const columns = [
       label: 'Creation date',
       minWidth: 170,
       align: 'right',
-      format: (value) => value.toLocaleString('en-US'),
+      format: (value) => formatDate(value),
     },  
 ];  
 
