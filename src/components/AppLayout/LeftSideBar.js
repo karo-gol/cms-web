@@ -8,11 +8,12 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  IconButton 
+  IconButton,
+  Tooltip
 } from '@material-ui/core';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import PeopleIcon from '@material-ui/icons/People';
-import HomeIcon from '@material-ui/icons/Home';
+import DescriptionIcon from '@material-ui/icons/Description';
 import PhotoAlbumIcon from '@material-ui/icons/PhotoAlbum';
 import PhotoIcon from '@material-ui/icons/Photo';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
@@ -72,15 +73,33 @@ const LeftSideBar = (props) => {
             <Divider />
 
             <List>              
-                <ListItem disableGutters className={classes.listItem} button key='Users'>
-                  <ListItemIcon className={classes.listItemIcon}><PeopleIcon /></ListItemIcon>
-                  <ListItemText primary='Users' />
-                </ListItem>
+                <Tooltip title='Users' placement='right' arrow>
+                  <ListItem 
+                    disableGutters 
+                    className={classes.listItem}
+                    button 
+                    key='Users'
+                    component='a'
+                    href='/users'
+                  >
+                      <ListItemIcon className={classes.listItemIcon}><PeopleIcon /></ListItemIcon>
+                      <ListItemText primary='Users' />
+                  </ListItem>
+                </Tooltip>
 
-                <ListItem disableGutters className={classes.listItem} button key='Home page'>
-                  <ListItemIcon className={classes.listItemIcon}><HomeIcon /></ListItemIcon>
-                  <ListItemText primary='Home page' />
-                </ListItem>
+                <Tooltip title='Edit page content' placement='right' arrow>
+                  <ListItem 
+                    disableGutters 
+                    className={classes.listItem} 
+                    button 
+                    key='Page content'
+                    component='a'
+                    href='/test'
+                  >
+                      <ListItemIcon className={classes.listItemIcon}><DescriptionIcon /></ListItemIcon>
+                      <ListItemText primary='Page content' />
+                  </ListItem>
+                </Tooltip>
 
                 <ListItem disableGutters className={classes.listItem} button key='Album names'>
                   <ListItemIcon className={classes.listItemIcon}><PhotoAlbumIcon /></ListItemIcon>

@@ -5,7 +5,7 @@ import Routes from './Routes';
 import Loading from './components/shared/Loading';
 
 const Root = (props) => {  
-  const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
     
     useEffect(() => {
         fetch(process.env.SERVICES_URI + '/refresh_token', { method: 'POST', credentials: 'include' })

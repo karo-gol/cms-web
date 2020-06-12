@@ -11,6 +11,8 @@ import { Route } from 'react-router-dom';
 import TopAppBar from './TopAppBar';
 import LeftSideBar from './LeftSideBar';
 import ScrollTop from './ScrollTop';
+//import Loading from '../shared/Loading';
+//import { setAccessToken } from '#root/helpers/accessToken';
 
 const useStyles = makeStyles((theme) => ({  
     root: {
@@ -40,6 +42,21 @@ const useStyles = makeStyles((theme) => ({
 
 const AppLayout = (props) => {
     const classes = useStyles();    
+    // const [loading, setLoading] = useState(true);
+    
+    // useEffect(() => {
+    //     fetch(process.env.SERVICES_URI + '/refresh_token', { method: 'POST', credentials: 'include' })
+    //         .then(async x => {               
+    //             const { accessToken } = await x.json();               
+    //             setAccessToken(accessToken); 
+    //             setLoading(false);
+    //         });
+    // }, []);
+
+    // if(loading) {
+    //     return <Loading />;
+    // }
+
     const [open, setOpen] = useState(false);
     
     const handleDrawerOpen = () => {
